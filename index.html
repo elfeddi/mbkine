@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MBKiné — Kinésithérapie à domicile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sage:#7B9B82;--sage-light:#A8C4AD;--sage-pale:#EFF5F0;
+  --cream:#FAF8F3;--earth:#C4A882;
+  --dark:#1C2419;--mid:#4A5E4D;--muted:#8A9E8D;--white:#fff;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden}
+
+/* ── PAGE SYSTEM ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── BANNER ── */
+.banner{background:var(--dark);color:rgba(255,255,255,.85);text-align:center;padding:10px 20px;font-size:13px;letter-spacing:.04em}
+.banner b{color:var(--earth)}
+
+/* ── HEADER ── */
+header{background:rgba(255,255,255,.97);position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(123,155,130,.12)}
+nav{max-width:1200px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
+.logo img{width:160px;height:160px;object-fit:contain}
+.logo-t{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--dark);display:block}
+.logo-s{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;display:block}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none}
+.nav-links a{text-decoration:none;color:var(--mid);font-size:14px;transition:color .2s;cursor:pointer}
+.nav-links a:hover{color:var(--dark)}
+.nav-cta{background:var(--dark)!important;color:#fff!important;padding:10px 22px;border-radius:40px;font-size:13px!important;font-weight:500!important}
+.nav-cta:hover{background:var(--sage)!important}
+
+/* ── HERO ── */
+.hero{background:var(--dark);min-height:88vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(123,155,130,.15) 0%,transparent 60%);pointer-events:none;z-index:1}
+.hero-content{padding:80px 60px 80px 80px;position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(123,155,130,.15);border:1px solid rgba(123,155,130,.3);border-radius:40px;padding:6px 16px;margin-bottom:32px}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--sage-light);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.hero-badge span{font-size:12px;color:var(--sage-light);letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(42px,4.5vw,66px);font-weight:300;color:#fff;line-height:1.1;margin-bottom:24px}
+.hero h1 em{font-style:italic;color:var(--sage-light)}
+.hero-p{font-size:16px;color:rgba(255,255,255,.55);line-height:1.8;max-width:420px;margin-bottom:44px;font-weight:300}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 32px;border-radius:40px;font-size:14px;font-weight:500;text-decoration:none;cursor:pointer;transition:all .25s;border:none}
+.btn-primary{background:var(--sage);color:#fff}
+.btn-primary:hover{background:var(--sage-light);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.18)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
+.btn-sage{background:var(--sage);color:#fff}
+.btn-sage:hover{background:var(--sage-light);transform:translateY(-1px)}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-dark:hover{background:var(--mid)}
+.btn-outline{background:transparent;color:var(--dark);border:1px solid rgba(28,36,25,.2)}
+.btn-outline:hover{border-color:var(--sage);color:var(--sage)}
+
+/* CAROUSEL */
+.hero-carousel{position:relative;height:100%;min-height:88vh;overflow:hidden}
+.slides-wrap{position:absolute;inset:0}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease}
+.slide.active{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover;filter:saturate(.75)brightness(.65)}
+.slide-ov{position:absolute;inset:0;background:linear-gradient(to right,var(--dark) 0%,rgba(28,36,25,.1) 50%,transparent)}
+.cdots{position:absolute;bottom:32px;right:32px;display:flex;gap:8px;z-index:5}
+.cdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;border:none;padding:0;transition:all .3s}
+.cdot.active{background:#fff;width:24px;border-radius:4px}
+.hero-stats{position:absolute;bottom:32px;left:40px;display:flex;gap:10px;z-index:5}
+.stat-pill{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 20px;backdrop-filter:blur(12px)}
+.stat-pill .num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#fff;line-height:1}
+.stat-pill .lbl{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-content>*{animation:fadeUp .7s ease both}
+.hero-badge{animation-delay:0s}.hero h1{animation-delay:.1s}.hero-p{animation-delay:.2s}.hero-btns{animation-delay:.3s}
+
+/* OFFER STRIP */
+.offer-strip{background:#fff;border-bottom:1px solid rgba(123,155,130,.12);padding:26px 40px;display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap}
+.offer-item{display:flex;align-items:center;gap:12px}
+.offer-icon{width:36px;height:36px;border-radius:50%;background:var(--sage-pale);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.offer-icon svg{width:17px;height:17px;stroke:var(--sage);fill:none;stroke-width:1.8}
+.offer-item strong{display:block;font-size:14px;font-weight:500;color:var(--dark)}
+.offer-item small{font-size:12px;color:var(--muted)}
+.offer-sep{width:1px;height:36px;background:rgba(123,155,130,.2)}
+
+/* SECTION */
+.section{max-width:1200px;margin:0 auto;padding:88px 40px}
+.section-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);font-weight:500;margin-bottom:10px}
+.section h2{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,48px);font-weight:300;color:var(--dark);line-height:1.15;margin-bottom:14px}
+.section h2 em{font-style:italic;color:var(--sage)}
+.section-desc{font-size:16px;color:var(--mid);max-width:500px;font-weight:300;margin-bottom:52px}
+
+/* CATEGORY CARDS */
+.cats-bg{background:#fff}
+.cats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.cats-grid-2{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.cat-card{border-radius:16px;overflow:hidden;text-decoration:none;position:relative;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .35s;cursor:pointer}
+.cat-card:hover{transform:translateY(-5px)}
+.cat-card.tall{aspect-ratio:3/4}.cat-card.wide{aspect-ratio:4/3}
+.cat-img{position:absolute;inset:0}
+.cat-img img{width:100%;height:100%;object-fit:cover;filter:saturate(.8);transition:transform .5s,filter .5s}
+.cat-card:hover .cat-img img{transform:scale(1.06);filter:saturate(1)}
+.cat-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(28,36,25,.78) 0%,rgba(28,36,25,.1) 55%,transparent)}
+.cat-body{position:relative;z-index:2;padding:20px}
+.cat-tag{display:inline-block;background:rgba(168,196,173,.25);border:1px solid rgba(168,196,173,.4);color:var(--sage-light);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:40px;margin-bottom:8px}
+.cat-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:#fff;line-height:1.2;margin-bottom:10px}
+.cat-link{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.6);transition:gap .2s,color .2s}
+.cat-card:hover .cat-link{gap:10px;color:var(--sage-light)}
+
+/* GALLERY */
+.gallery-strip{display:grid;grid-template-columns:repeat(6,1fr);height:220px;overflow:hidden}
+.gallery-item{overflow:hidden}
+.gallery-item img{width:100%;height:100%;object-fit:cover;filter:saturate(.65)brightness(.85);transition:all .5s;display:block}
+.gallery-item:hover img{filter:saturate(1)brightness(1);transform:scale(1.06)}
+
+/* STEPS */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.step{padding:40px 32px;background:#fff;border-radius:20px;border:1px solid rgba(123,155,130,.1);position:relative;overflow:hidden}
+.step::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--sage);transform:scaleX(0);transition:transform .4s;transform-origin:left}
+.step:hover::after{transform:scaleX(1)}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;color:rgba(123,155,130,.12);line-height:1;position:absolute;top:14px;right:20px}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--sage);margin-bottom:20px}
+.step h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--dark);margin-bottom:10px;margin-top:40px}
+.step p{font-size:14px;color:var(--muted);line-height:1.7;font-weight:300}
+
+/* FOOTER */
+footer{background:var(--dark)}
+.footer-inner{max-width:1200px;margin:0 auto;padding:64px 40px 40px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
+.footer-brand p{font-size:14px;color:rgba(255,255,255,.4);line-height:1.8;margin-top:16px;font-weight:300}
+.footer-col h4{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:18px}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:10px}
+.footer-col a{text-decoration:none;color:rgba(255,255,255,.5);font-size:14px;font-weight:300;transition:color .2s;cursor:pointer}
+.footer-col a:hover{color:var(--sage-light)}
+.social-pill{border:1px solid rgba(255,255,255,.1)!important;padding:6px 16px;border-radius:40px;display:inline-block;margin-bottom:10px}
+.social-pill:hover{border-color:var(--sage)!important;color:var(--sage-light)!important}
+.footer-bottom{max-width:1200px;margin:0 auto;padding:24px 40px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.28)}
+
+/* ── COLLECTION PAGE ── */
+.page-header{background:var(--dark);padding:80px 40px 60px;position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(123,155,130,.2),transparent 60%);pointer-events:none}
+.page-header-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.45);margin-bottom:20px}
+.breadcrumb a{color:rgba(255,255,255,.45);text-decoration:none;cursor:pointer;transition:color .2s}
+.breadcrumb a:hover{color:var(--sage-light)}
+.breadcrumb span{color:rgba(255,255,255,.25)}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,56px);font-weight:300;color:#fff;line-height:1.1;margin-bottom:12px}
+.page-header h1 em{font-style:italic;color:var(--sage-light)}
+.page-header p{font-size:16px;color:rgba(255,255,255,.5);font-weight:300;max-width:480px}
+.cat-hero-img{position:absolute;right:0;top:0;bottom:0;width:35%;opacity:.35;overflow:hidden}
+.cat-hero-img img{width:100%;height:100%;object-fit:cover;filter:saturate(.6)}
+
+.products-section{max-width:1200px;margin:0 auto;padding:60px 40px}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+.prod-card{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;transition:all .35s;border:1px solid rgba(123,155,130,.08);display:flex;flex-direction:column}
+.prod-card:hover{transform:translateY(-5px);box-shadow:0 16px 48px rgba(28,36,25,.1)}
+.prod-img{height:220px;overflow:hidden;position:relative}
+.prod-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s,filter .5s;filter:saturate(.85)}
+.prod-card:hover .prod-img img{transform:scale(1.05);filter:saturate(1)}
+.prod-badge{position:absolute;top:12px;left:12px;background:rgba(28,36,25,.75);color:#fff;font-size:11px;padding:4px 10px;border-radius:40px;font-weight:400;backdrop-filter:blur(4px)}
+.prod-badge.sale{background:rgba(196,168,130,.9);color:var(--dark)}
+.prod-body{padding:20px 22px 24px;flex:1;display:flex;flex-direction:column;gap:8px}
+.prod-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--dark);line-height:1.2}
+.prod-desc{font-size:13px;color:var(--muted);font-weight:300;line-height:1.6;flex:1}
+.prod-price{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.prod-price .current{font-size:20px;font-weight:500;color:var(--dark)}
+.prod-price .old{font-size:14px;color:var(--muted);text-decoration:line-through}
+.prod-cta{margin-top:12px;width:100%;padding:12px;border-radius:40px;background:var(--sage);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .25s;font-family:'DM Sans',sans-serif}
+.prod-cta:hover{background:var(--sage-light)}
+
+/* ── PRODUCT DETAIL PAGE ── */
+.product-detail{max-width:1200px;margin:0 auto;padding:60px 40px}
+.product-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.product-gallery-main{border-radius:20px;overflow:hidden;aspect-ratio:1;background:#f5f5f5}
+.product-gallery-main img{width:100%;height:100%;object-fit:cover}
+.product-thumbs{display:flex;gap:10px;margin-top:12px}
+.thumb{width:70px;height:70px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .2s}
+.thumb.active{border-color:var(--sage)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.product-info{}
+.product-info .breadcrumb{margin-bottom:24px}
+.product-cat-tag{display:inline-block;background:var(--sage-pale);color:var(--sage);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:40px;font-weight:500;margin-bottom:16px}
+.product-info h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3vw,42px);font-weight:300;color:var(--dark);line-height:1.15;margin-bottom:16px}
+.product-price-block{display:flex;align-items:baseline;gap:12px;margin-bottom:24px}
+.product-price-block .price-main{font-size:32px;font-weight:500;color:var(--dark);font-family:'Cormorant Garamond',serif}
+.product-price-block .price-old{font-size:18px;color:var(--muted);text-decoration:line-through}
+.price-badge{background:rgba(196,168,130,.2);color:var(--earth-dark,#8B6F4E);font-size:12px;padding:3px 10px;border-radius:40px;font-weight:500}
+.product-desc{font-size:15px;color:var(--mid);line-height:1.75;font-weight:300;margin-bottom:32px;border-left:3px solid var(--sage-pale);padding-left:20px}
+.product-features{display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
+.product-feature{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mid);font-weight:300}
+.product-feature svg{width:16px;height:16px;stroke:var(--sage);fill:none;stroke-width:2;flex-shrink:0}
+.product-actions{display:flex;gap:12px}
+.product-actions .btn{font-size:15px;padding:16px 36px}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .hero{grid-template-columns:1fr}.hero-carousel{display:none}.hero-content{padding:60px 28px}
+  .cats-grid{grid-template-columns:repeat(2,1fr)}.cats-grid-2{grid-template-columns:repeat(2,1fr)}
+  .steps-grid{grid-template-columns:1fr}.footer-inner{grid-template-columns:1fr 1fr}
+  .gallery-strip{grid-template-columns:repeat(3,1fr);height:160px}
+  .offer-sep{display:none}.section{padding:60px 24px}
+  nav{padding:0 20px}.nav-links{gap:16px}
+  .product-layout{grid-template-columns:1fr}
+  .cat-hero-img{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ SHARED HEADER ══════════════════════════════ -->
+<div class="banner">Soins à domicile et au cabinet sur rendez-vous 24H à l'avance</div>
+<header>
+  <nav>
+    <div class="logo" onclick="go('home')">
+      <img src="images/others_R2geQEHxtk4P0jOzEIE6j19FFV3DV5UZTXWJhkqd.png" alt="Meryem BETTAH"/>
+      <!-- <div><span class="logo-t">Meryem BETTAH</span><span class="logo-s">Kinésithérapie</span></div>-->
+    </div>
+    <ul class="nav-links">
+      <li><a onclick="go('home')">Accueil</a></li>
+      <li><a onclick="go('home','services')">Nos soins</a></li>
+      <li><a onclick="go('home','comment')">Comment ça marche</a></li>
+      <li><a onclick="go('home','contact')" class="nav-cta">Prendre RDV</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ══════════════════════════════ HOME PAGE ══════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge"><span class="badge-dot"></span><span>Soins à domicile &amp; en cabinet</span></div>
+      <h1>Prenez soin de<br/>votre corps,<br/><em>chez vous</em></h1>
+      <p class="hero-p">Des soins kinésithérapeutiques personnalisés dispensés par une professionnelle de santé — à domicile ou en cabinet.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="go('home','services')">Découvrir nos soins</button>
+        <button class="btn btn-ghost" onclick="go('home','contact')">Prendre rendez-vous</button>
+      </div>
+    </div>
+    <div class="hero-carousel">
+      <div class="slides-wrap" id="slides">
+        <div class="slide active"><img src="images/others_8FFpDWavIEFbRs4as8vaWQ0C2CoG88ZOijRgjtwc.jpg"/><div class="slide-ov"></div></div>
+        <div class="slide"><img src="images/others_4Tlu3c4aRGvc1Ch715LjS3mvZrj4I0WkJnxZoUQW.jpg"/><div class="slide-ov"></div></div>
+        <div class="slide"><img src="images/others_xcCveAtKNLRVs2lb44gddyJOSCp5u1e9AYa6F5qh.jpg"/><div class="slide-ov"></div></div>
+        <div class="slide"><img src="images/others_r0mOD82k7jc8ge1285aCya1wOfIsSHV0lfUe6lRG.jpg"/><div class="slide-ov"></div></div>
+        <div class="slide"><img src="images/others_e0JUHtLTloMkTunaqf5YBqMnZLlGSCpkZrfDJ7yu.jpg"/><div class="slide-ov"></div></div>
+        <div class="slide"><img src="images/others_i1qzWKwQkTV4gLThuCxxL2NKsuR4LziWf3TVWJh4.jpg"/><div class="slide-ov"></div></div>
+      </div>
+      <div class="cdots" id="dots"></div>
+      <div class="hero-stats">
+        <div class="stat-pill"><div class="num">7+</div><div class="lbl">Spécialités</div></div>
+        <div class="stat-pill"><div class="num">24h</div><div class="lbl">Délai RDV</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFER STRIP -->
+  <div class="offer-strip">
+    <div class="offer-item"><div class="offer-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div><strong>Soins à domicile</strong><small>Déplacement chez vous</small></div></div>
+    <div class="offer-sep"></div>
+    <div class="offer-item"><div class="offer-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><strong>RDV en 24h</strong><small>Réservation rapide</small></div></div>
+    <div class="offer-sep"></div>
+    <div class="offer-item"><div class="offer-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div><strong>Paiement à réception</strong><small>Livraison offerte</small></div></div>
+    <div class="offer-sep"></div>
+    <div class="offer-item"><div class="offer-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 2 2 0 015 8h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L9.09 15.9a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div><div><strong>Contactez-nous</strong><small>Disponible 7j/7</small></div></div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="cats-bg">
+  <div class="section" id="services">
+    <div class="section-label">Nos spécialités</div>
+    <h2>Des soins adaptés<br/>à <em>chaque besoin</em></h2>
+    <p class="section-desc">Une approche globale de votre santé — du bien-être à la rééducation médicale spécialisée.</p>
+    <div class="cats-grid">
+      <div class="cat-card tall" onclick="goCollection('bien-etre')">
+        <div class="cat-img"><img src="images/categories_LcvWKii3DHCK7bPshu4QwwsEKKQjuv5nBQkmCHAz.png"/></div>
+        <div class="cat-grad"></div>
+        <div class="cat-body"><span class="cat-tag">Relaxation</span><div class="cat-name">Bien-être</div><div class="cat-link">Découvrir <span>→</span></div></div>
+      </div>
+      <div class="cat-card tall" onclick="goCollection('holistique')">
+        <div class="cat-img"><img src="images/categories_FQG6u5tgqm1iwupidPWTnpDdKqqkZM6i8NB6EnMi.png"/></div>
+        <div class="cat-grad"></div>
+        <div class="cat-body"><span class="cat-tag">Corps &amp; esprit</span><div class="cat-name">Holistique</div><div class="cat-link">Découvrir <span>→</span></div></div>
+      </div>
+      <div class="cat-card tall" onclick="goCollection('perinatalite')">
+        <div class="cat-img"><img src="images/categories_PsGnvIpTGcmso4t7HRr2oxritx21NnWzRYdcHqBb.png"/></div>
+        <div class="cat-grad"></div>
+        <div class="cat-body"><span class="cat-tag">Maternité</span><div class="cat-name">Périnatalité &amp; maternité</div><div class="cat-link">Découvrir <span>→</span></div></div>
+      </div>
+      <div class="cat-card tall" onclick="goCollection('medico-sociale')">
+        <div class="cat-img"><img src="images/categories_ETSVbUJdWkJUehodievRvbmvxQrSYW4cHWiYzTRI.png"/></div>
+        <div class="cat-grad"></div>
+        <div class="cat-body"><span class="cat-tag">Médical</span><div class="cat-name">Médico-sociale</div><div class="cat-link">Découvrir <span>→</span></div></div>
+      </div>
+    </div>
+    <div class="cats-grid-2">
+      <div class="cat-card wide" onclick="goCollection('massage')">
+        <div class="cat-img"><img src="images/categories_jEmI9FyaMk8sP3IS8RVn9gr5HJ1Y6cgTjnBiS479.jpg"/></div>
+        <div class="cat-grad"></div>
+        <div class="cat-body"><span class="cat-tag">Thérapeutique</span><div class="cat-name">Massage</div><div class="cat-link">Découvrir <span>→</span></div></div>
+      </div>
+      <div class="cat-card wide" onclick="goCollection('drainage')">
+        <div class="cat-img"><img src="images/categories_iF7JsaP21nlLraVpIYr8xKZkph5JHbDGfvCUedD9.jpg"/></div>
+        <div class="cat-grad"></div>
+        <div class="cat-body"><span class="cat-tag">Circulation</span><div class="cat-name">Drainage lymphatique</div><div class="cat-link">Découvrir <span>→</span></div></div>
+      </div>
+      <div class="cat-card wide" onclick="goCollection('marche')">
+        <div class="cat-img"><img src="images/categories_oajfEL2yzTii2V9TrJNeq2UbzixlEQj8C9nn2Jo9.jpg"/></div>
+        <div class="cat-grad"></div>
+        <div class="cat-body"><span class="cat-tag">Rééducation</span><div class="cat-name">Accompagnement à la marche</div><div class="cat-link">Découvrir <span>→</span></div></div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- GALLERY -->
+ <!-- <div class="gallery-strip">
+    
+    <div class="gallery-item"><img src="images/others_4Tlu3c4aRGvc1Ch715LjS3mvZrj4I0WkJnxZoUQW.jpg"/></div>
+    <div class="gallery-item"><img src="images/others_xcCveAtKNLRVs2lb44gddyJOSCp5u1e9AYa6F5qh.jpg"/></div>
+    <div class="gallery-item"><img src="images/others_r0mOD82k7jc8ge1285aCya1wOfIsSHV0lfUe6lRG.jpg"/></div>
+    <div class="gallery-item"><img src="images/others_e0JUHtLTloMkTunaqf5YBqMnZLlGSCpkZrfDJ7yu.jpg"/></div>
+    <div class="gallery-item"><img src="images/others_i1qzWKwQkTV4gLThuCxxL2NKsuR4LziWf3TVWJh4.jpg"/></div>
+  </div>
+-->
+  <!-- HOW IT WORKS -->
+  <div class="section" id="comment">
+    <div class="section-label">Processus</div>
+    <h2>Comment ça <em>marche ?</em></h2>
+    <p class="section-desc">En 3 étapes simples, bénéficiez d'un soin professionnel sans contrainte.</p>
+    <div class="steps-grid">
+      <div class="step"><div class="step-num">01</div><div class="step-dot"></div><h3>Choisissez votre soin</h3><p>Parcourez nos spécialités et sélectionnez la prestation adaptée à votre besoin — à domicile ou en cabinet.</p></div>
+      <div class="step"><div class="step-num">02</div><div class="step-dot"></div><h3>Réservez en 24h</h3><p>Prenez rendez-vous 24h à l'avance via notre formulaire de contact ou directement par téléphone.</p></div>
+      <div class="step"><div class="step-num">03</div><div class="step-dot"></div><h3>Payez à réception</h3><p>Aucun prépaiement requis. Vous réglez uniquement après avoir reçu votre soin, en toute confiance.</p></div>
+    </div>
+  </div>
+
+  <div id="contact" style="padding:60px 40px;background:#fff;text-align:center">
+    <div style="max-width:560px;margin:0 auto">
+      <div class="section-label" style="text-align:center">Prendre rendez-vous</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--dark);margin-bottom:12px">Contactez-<em style="font-style:italic;color:var(--sage)">nous</em></h2>
+      <p style="color:var(--mid);font-weight:300;margin-bottom:32px">Soins sur rendez-vous 24h à l'avance. Disponible 7j/7.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="tel:+212669121369" class="btn btn-dark">📞 06 69 12 13 69 </a>
+        <a href="https://instagram.com/meryemkinesi" target="_blank" class="btn btn-outline">Instagram @meryemkinesi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo" onclick="go('home')">
+          <img src="images/others_R2geQEHxtk4P0jOzEIE6j19FFV3DV5UZTXWJhkqd.png" alt="Logo"/>
+          <!--<div><span class="logo-t" style="color:#fff">MBKiné</span><span class="logo-s" style="color:rgba(255,255,255,.3)">Kinésithérapie</span></div>-->
+        </div>
+        <p>Soins kinésithérapeutiques personnalisés à domicile et en cabinet, dispensés par une professionnelle qualifiée.</p>
+      </div>
+      <div class="footer-col"><h4>Navigation</h4><ul>
+        <li><a onclick="go('home')">Accueil</a></li>
+        <li><a onclick="go('home','services')">Nos soins</a></li>
+        <li><a onclick="go('home','contact')">Contactez-nous</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Informations</h4><ul>
+        <li><a>Méthodes de paiement</a></li>
+        <li><a>Aide &amp; FAQ</a></li>
+        <li><a>Conditions d'utilisation</a></li>
+        <li><a>Confidentialité</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Suivez-nous</h4><ul>
+        <li><a class="social-pill">Instagram</a></li>
+        <li><a class="social-pill">Facebook</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 MBKiné — Tous droits réservés</span><span>Kinésithérapie à domicile &amp; en cabinet</span></div>
+  </footer>
+
+</div><!-- /page-home -->
+
+<!-- ══════════════════════════════ COLLECTION PAGE ══════════════════════════════ -->
+<div id="page-collection" class="page">
+  <div class="page-header">
+    <div class="cat-hero-img" id="col-hero-img"><img id="col-hero-src" src="" alt=""/></div>
+    <div class="page-header-inner">
+      <div class="breadcrumb"><a onclick="go('home')">Accueil</a><span>/</span><a onclick="go('home','services')">Nos soins</a><span>/</span><span id="col-breadcrumb"></span></div>
+      <h1 id="col-title"></h1>
+      <p id="col-subtitle"></p>
+    </div>
+  </div>
+  <div class="products-section">
+    <div class="products-grid" id="products-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ PRODUCT PAGE ══════════════════════════════ -->
+<div id="page-product" class="page">
+  <div class="product-detail">
+    <div class="product-layout">
+      <div>
+        <div class="product-gallery-main"><img id="prod-main-img" src="" alt=""/></div>
+        <div class="product-thumbs" id="prod-thumbs"></div>
+      </div>
+      <div class="product-info">
+        <div class="breadcrumb">
+          <a onclick="go('home')">Accueil</a><span>/</span>
+          <a id="prod-col-link" onclick="">Nos soins</a><span>/</span>
+          <span id="prod-breadcrumb"></span>
+        </div>
+        <div class="product-cat-tag" id="prod-cat-tag"></div>
+        <h1 id="prod-title"></h1>
+        <div class="product-price-block" id="prod-price-block"></div>
+        <p class="product-desc" id="prod-desc"></p>
+        <div class="product-features" id="prod-features"></div>
+        <div class="product-actions">
+          <button class="btn btn-sage" onclick="go('home','contact')">Réserver ce soin</button>
+          <button class="btn btn-outline" id="prod-back-btn">← Retour</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const IMGS = {
+  'others/R2geQEHxtk4P0jOzEIE6j19FFV3DV5UZTXWJhkqd.png': 'images/others_R2geQEHxtk4P0jOzEIE6j19FFV3DV5UZTXWJhkqd.png',
+  'others/8FFpDWavIEFbRs4as8vaWQ0C2CoG88ZOijRgjtwc.jpg': 'images/others_8FFpDWavIEFbRs4as8vaWQ0C2CoG88ZOijRgjtwc.jpg',
+  'others/4Tlu3c4aRGvc1Ch715LjS3mvZrj4I0WkJnxZoUQW.jpg': 'images/others_4Tlu3c4aRGvc1Ch715LjS3mvZrj4I0WkJnxZoUQW.jpg',
+  'others/xcCveAtKNLRVs2lb44gddyJOSCp5u1e9AYa6F5qh.jpg': 'images/others_xcCveAtKNLRVs2lb44gddyJOSCp5u1e9AYa6F5qh.jpg',
+  'others/r0mOD82k7jc8ge1285aCya1wOfIsSHV0lfUe6lRG.jpg': 'images/others_r0mOD82k7jc8ge1285aCya1wOfIsSHV0lfUe6lRG.jpg',
+  'others/e0JUHtLTloMkTunaqf5YBqMnZLlGSCpkZrfDJ7yu.jpg': 'images/others_e0JUHtLTloMkTunaqf5YBqMnZLlGSCpkZrfDJ7yu.jpg',
+  'others/i1qzWKwQkTV4gLThuCxxL2NKsuR4LziWf3TVWJh4.jpg': 'images/others_i1qzWKwQkTV4gLThuCxxL2NKsuR4LziWf3TVWJh4.jpg',
+  'categories/LcvWKii3DHCK7bPshu4QwwsEKKQjuv5nBQkmCHAz.png': 'images/categories_LcvWKii3DHCK7bPshu4QwwsEKKQjuv5nBQkmCHAz.png',
+  'categories/FQG6u5tgqm1iwupidPWTnpDdKqqkZM6i8NB6EnMi.png': 'images/categories_FQG6u5tgqm1iwupidPWTnpDdKqqkZM6i8NB6EnMi.png',
+  'categories/PsGnvIpTGcmso4t7HRr2oxritx21NnWzRYdcHqBb.png': 'images/categories_PsGnvIpTGcmso4t7HRr2oxritx21NnWzRYdcHqBb.png',
+  'categories/ETSVbUJdWkJUehodievRvbmvxQrSYW4cHWiYzTRI.png': 'images/categories_ETSVbUJdWkJUehodievRvbmvxQrSYW4cHWiYzTRI.png',
+  'categories/jEmI9FyaMk8sP3IS8RVn9gr5HJ1Y6cgTjnBiS479.jpg': 'images/categories_jEmI9FyaMk8sP3IS8RVn9gr5HJ1Y6cgTjnBiS479.jpg',
+  'categories/iF7JsaP21nlLraVpIYr8xKZkph5JHbDGfvCUedD9.jpg': 'images/categories_iF7JsaP21nlLraVpIYr8xKZkph5JHbDGfvCUedD9.jpg',
+  'categories/oajfEL2yzTii2V9TrJNeq2UbzixlEQj8C9nn2Jo9.jpg': 'images/categories_oajfEL2yzTii2V9TrJNeq2UbzixlEQj8C9nn2Jo9.jpg',
+  'products/srU2i28xvaQXLtars0gl5l5FZv4hQeI9bMxx0RxV.jpg': 'images/products_srU2i28xvaQXLtars0gl5l5FZv4hQeI9bMxx0RxV.jpg',
+  'products/Ap2UmYXflV7jrXEvgzznY1OO7rOtEfFfHIQayBvj.png': 'images/products_Ap2UmYXflV7jrXEvgzznY1OO7rOtEfFfHIQayBvj.png',
+  'products/PkaYTiFBleuqpxEsvI9f0kxQ0VQyhntHtALxIaFc.webp': 'images/products_PkaYTiFBleuqpxEsvI9f0kxQ0VQyhntHtALxIaFc.webp',
+  'products/AYvubdMzJJp2QjeENs6dZIoCFo7x9dv8NaPhduXo.png': 'images/products_AYvubdMzJJp2QjeENs6dZIoCFo7x9dv8NaPhduXo.png',
+  'products/AbC68CE8pPnIMuXsbvC9J5XtYCaMKezCH8VhvsPL.jpg': 'images/products_AbC68CE8pPnIMuXsbvC9J5XtYCaMKezCH8VhvsPL.jpg',
+  'products/vRFpvCFubsuEbv4mirKOoCUgmH5PBLu1gaBrCpjI.webp': 'images/products_vRFpvCFubsuEbv4mirKOoCUgmH5PBLu1gaBrCpjI.webp',
+  'products/0jQkxVxz9vbveR9KT02dVhbW0Vh1nv9qXiPw1HAL.png': 'images/products_0jQkxVxz9vbveR9KT02dVhbW0Vh1nv9qXiPw1HAL.png',
+  'products/Fp8I6kJ3Yb8pXAAPwDbmQXDQpJUdtT12ZFRez2OA.jpg': 'images/products_Fp8I6kJ3Yb8pXAAPwDbmQXDQpJUdtT12ZFRez2OA.jpg',
+  'products/aaK8o4K5hDTumtcm89UYpBLQllKqKVYJTNMbIPNA.png': 'images/products_aaK8o4K5hDTumtcm89UYpBLQllKqKVYJTNMbIPNA.png',
+  'products/l4MMID8fUMtGreP1Vr0TiN2d8DWL3NePhy2HEzzv.png': 'images/products_l4MMID8fUMtGreP1Vr0TiN2d8DWL3NePhy2HEzzv.png',
+  'products/O8UM0gsencFL8yNPQv05d0VXM13IDfD7b72c0rtG.png': 'images/products_O8UM0gsencFL8yNPQv05d0VXM13IDfD7b72c0rtG.png',
+  'products/WlB0eyfkLAmy4bC1tQ6eFjUayqHXaIpj65fPbAR6.png': 'images/products_WlB0eyfkLAmy4bC1tQ6eFjUayqHXaIpj65fPbAR6.png',
+  'products/gbw1MuHEXOGRSgSfFI5meZzMOGsqYa71MNJ7kreb.png': 'images/products_gbw1MuHEXOGRSgSfFI5meZzMOGsqYa71MNJ7kreb.png',
+  'products/4Oyj6liqOyx2BKdydPV4RfbIq75CdmhkhZayjLlt.jpg': 'images/products_4Oyj6liqOyx2BKdydPV4RfbIq75CdmhkhZayjLlt.jpg',
+  'products/yBTaIgBx4qiPNSRngTWifuqorFSeGsULOyBsDbNw.jpg': 'images/products_yBTaIgBx4qiPNSRngTWifuqorFSeGsULOyBsDbNw.jpg',
+  'products/dXtrKhmF6xVv7niQXWCQYqsLPZZk1SdUNS6mI0Sl.jpg': 'images/products_dXtrKhmF6xVv7niQXWCQYqsLPZZk1SdUNS6mI0Sl.jpg',
+  'products/yXqnGuGKCaylbZ0Adb7G2nGs2VHQMJgzZo2sZsPI.png': 'images/products_yXqnGuGKCaylbZ0Adb7G2nGs2VHQMJgzZo2sZsPI.png',
+  'products/Y1S9ZCNuFgCfMUKD9EE8CIZ4d6pvV86sp35J8xWc.jpg': 'images/products_Y1S9ZCNuFgCfMUKD9EE8CIZ4d6pvV86sp35J8xWc.jpg',
+  'products/8Dycik7RJsrdFBI3IO16fyB3vQERr8BJhgoSZfkz.png': 'images/products_8Dycik7RJsrdFBI3IO16fyB3vQERr8BJhgoSZfkz.png',
+  'products/K3BUcJTx3ukdugk6JHn3qsaDTSrEGCcBJieW3kqc.jpg': 'images/products_K3BUcJTx3ukdugk6JHn3qsaDTSrEGCcBJieW3kqc.jpg',
+  'products/PGmWnrzVWAyMvD5caQ3RaT2HIF1vDlohScm63lKM.webp': 'images/products_PGmWnrzVWAyMvD5caQ3RaT2HIF1vDlohScm63lKM.webp',
+  'products/Gwf8fGS1og8nxCZM5xvrggdZcoGBVthKkr90EdoK.jpg': 'images/products_Gwf8fGS1og8nxCZM5xvrggdZcoGBVthKkr90EdoK.jpg',
+  'products/fz2RpJm49QMBxH9d5zdnfJhUf3Umk0AbGi0stiyX.png': 'images/products_fz2RpJm49QMBxH9d5zdnfJhUf3Umk0AbGi0stiyX.png',
+  'products/yD7UrJlNvsrLjJI91lA8DAdWpz61Pvpde2bxy21E.jpg': 'images/products_yD7UrJlNvsrLjJI91lA8DAdWpz61Pvpde2bxy21E.jpg',
+  'products/y6uNCp28RMApjusJZzrbZwu1Ny6x1l8TY5sl5sKt.png': 'images/products_y6uNCp28RMApjusJZzrbZwu1Ny6x1l8TY5sl5sKt.png',
+  'products/tUaE1m3pr28r9kAeZNxELyUrd8A4okWFuFgX6s1S.png': 'images/products_tUaE1m3pr28r9kAeZNxELyUrd8A4okWFuFgX6s1S.png',
+  'products/uSeozEyO0ZnEnzhZlJ1Tla9jI4GqUA7YqaGYGR84.jpg': 'images/products_uSeozEyO0ZnEnzhZlJ1Tla9jI4GqUA7YqaGYGR84.jpg',
+  'products/5jnjZ4rqfdhPg9XIJCSpiq1P3989FUX2j6aIkEVT.jpg': 'images/products_5jnjZ4rqfdhPg9XIJCSpiq1P3989FUX2j6aIkEVT.jpg',
+  'products/q6Xb27RXH3YKyBpogppxcT6UKghjBHph771z0Ltf.jpg': 'images/products_q6Xb27RXH3YKyBpogppxcT6UKghjBHph771z0Ltf.jpg',
+  'products/oXX3XsYUeD0oYQXdqEnzG2S3c7D2KQ5t9bciCwZp.webp': 'images/products_oXX3XsYUeD0oYQXdqEnzG2S3c7D2KQ5t9bciCwZp.webp',
+  'products/FUSP3G4zeCMx7QvhBC1O4YvlmySZMuaD3R2X38e6.jpg': 'images/products_FUSP3G4zeCMx7QvhBC1O4YvlmySZMuaD3R2X38e6.jpg',
+  'products/h5vQY8YrqItw08Fc37wQO813JVvx6tVnkomeYR5t.webp': 'images/products_h5vQY8YrqItw08Fc37wQO813JVvx6tVnkomeYR5t.webp',
+  'products/WDetqTgEqHpsuwzEysrvxeRq1ThNgKfyuTfnUdH3.webp': 'images/products_WDetqTgEqHpsuwzEysrvxeRq1ThNgKfyuTfnUdH3.webp',
+  'products/OEivRWAhoo1jnPHx2Zqgs8Ipy89tLFa3nZOxhDte.jpg': 'images/products_OEivRWAhoo1jnPHx2Zqgs8Ipy89tLFa3nZOxhDte.jpg',
+  'products/7KTpz2celUTgC7M08xXlZ5pgddM4VVJH7lLKam7v.jpg': 'images/products_7KTpz2celUTgC7M08xXlZ5pgddM4VVJH7lLKam7v.jpg',
+  'products/htH8HP3EYJEQamhPudCoYyZcPP39jvquacORlazY.jpg': 'images/products_htH8HP3EYJEQamhPudCoYyZcPP39jvquacORlazY.jpg',
+  'products/qiPQXiUybsEPkY2xzdA7Aw1XFB3nXnpqkCNAzi4c.jpg': 'images/products_qiPQXiUybsEPkY2xzdA7Aw1XFB3nXnpqkCNAzi4c.jpg'
+};
+const CDN = (path) => IMGS[path] || 'images/' + path.split('/').pop();
+
+const COLLECTIONS = {
+  'bien-etre': {
+    title: 'Bien-<em>être</em>', subtitle: 'Séances relaxantes pour retrouver équilibre et sérénité au quotidien.',
+    img: CDN('categories/LcvWKii3DHCK7bPshu4QwwsEKKQjuv5nBQkmCHAz.png'), tag:'Relaxation', label:'Bien-être'
+  },
+  'holistique': {
+    title: '<em>Holistique</em>', subtitle: 'Approche globale corps-esprit pour une santé durable et profonde.',
+    img: CDN('categories/FQG6u5tgqm1iwupidPWTnpDdKqqkZM6i8NB6EnMi.png'), tag:'Corps & esprit', label:'Holistique'
+  },
+  'perinatalite': {
+    title: 'Périnatalité &amp; <em>maternité</em>', subtitle: 'Accompagnement spécialisé pré et post-natal pour maman et bébé.',
+    img: CDN('categories/PsGnvIpTGcmso4t7HRr2oxritx21NnWzRYdcHqBb.png'), tag:'Maternité', label:'Périnatalité & maternité'
+  },
+  'medico-sociale': {
+    title: '<em>Médico</em>-sociale', subtitle: 'Prise en charge adaptée aux situations de dépendance et de fragilité.',
+    img: CDN('categories/ETSVbUJdWkJUehodievRvbmvxQrSYW4cHWiYzTRI.png'), tag:'Médical', label:'Médico-sociale'
+  },
+  'massage': {
+    title: '<em>Massage</em>', subtitle: 'Massages thérapeutiques pour soulager tensions musculaires et douleurs.',
+    img: CDN('categories/jEmI9FyaMk8sP3IS8RVn9gr5HJ1Y6cgTjnBiS479.jpg'), tag:'Thérapeutique', label:'Massage'
+  },
+  'drainage': {
+    title: 'Drainage <em>lymphatique</em>', subtitle: 'Technique douce pour stimuler la circulation et réduire les œdèmes.',
+    img: CDN('categories/iF7JsaP21nlLraVpIYr8xKZkph5JHbDGfvCUedD9.jpg'), tag:'Circulation', label:'Drainage lymphatique'
+  },
+  'marche': {
+    title: 'Accompagnement à la <em>marche</em>', subtitle: 'Rééducation de la mobilité et des troubles de la marche.',
+    img: CDN('categories/oajfEL2yzTii2V9TrJNeq2UbzixlEQj8C9nn2Jo9.jpg'), tag:'Rééducation', label:'Accompagnement à la marche'
+  }
+};
+
+const PRODUCTS = {
+  'bien-etre': [
+    { id:'massrelax', name:'Massage relaxant', price:500, img: CDN('products/srU2i28xvaQXLtars0gl5l5FZv4hQeI9bMxx0RxV.jpg'), thumbs:[CDN('products/Ap2UmYXflV7jrXEvgzznY1OO7rOtEfFfHIQayBvj.png'), CDN('products/srU2i28xvaQXLtars0gl5l5FZv4hQeI9bMxx0RxV.jpg')], desc:"Notre massage relaxant est conçu pour apaiser votre corps et votre esprit. Grâce à des techniques éprouvées et des huiles essentielles de qualité, profitez d'une expérience de détente ultime qui réduit le stress et favorise un sommeil réparateur.", features:['Durée : 60 min','Huiles essentielles de qualité','À domicile ou en cabinet','Paiement à réception'] },
+    { id:'massthera', name:'Massage thérapeutique (deep tissue)', price:250, img: CDN('products/PkaYTiFBleuqpxEsvI9f0kxQ0VQyhntHtALxIaFc.webp'), thumbs:[CDN('products/AYvubdMzJJp2QjeENs6dZIoCFo7x9dv8NaPhduXo.png'), CDN('products/AbC68CE8pPnIMuXsbvC9J5XtYCaMKezCH8VhvsPL.jpg'), CDN('products/PkaYTiFBleuqpxEsvI9f0kxQ0VQyhntHtALxIaFc.webp')], desc:"Dites adieu aux douleurs chroniques et au stress ! Notre massage thérapeutique en profondeur cible les muscles tendus et les nœuds pour vous offrir un soulagement durable. Grâce à des techniques précises, retrouvez flexibilité et confort.", features:['Cible les douleurs chroniques','Techniques de deep tissue','Durée : 45 min','À domicile ou en cabinet'] },
+    { id:'drainage-be', name:'Drainage Lymphatique', price:300, img: CDN('products/vRFpvCFubsuEbv4mirKOoCUgmH5PBLu1gaBrCpjI.webp'), thumbs:[CDN('products/0jQkxVxz9vbveR9KT02dVhbW0Vh1nv9qXiPw1HAL.png'), CDN('products/Fp8I6kJ3Yb8pXAAPwDbmQXDQpJUdtT12ZFRez2OA.jpg'), CDN('products/vRFpvCFubsuEbv4mirKOoCUgmH5PBLu1gaBrCpjI.webp')], desc:"Le drainage lymphatique est une méthode douce et naturelle qui stimule la circulation lymphatique, favorise l'élimination des toxines et réduit la rétention d'eau. Grâce à des techniques manuelles spécialisées, retrouvez légèreté et bien-être.", features:['Méthode douce et naturelle','Élimine les toxines','Réduit les gonflements','1 séance individuelle'] },
+    { id:'gunmassage', name:'Gun Massage', price:200, img: CDN('products/aaK8o4K5hDTumtcm89UYpBLQllKqKVYJTNMbIPNA.png'), thumbs:[CDN('products/aaK8o4K5hDTumtcm89UYpBLQllKqKVYJTNMbIPNA.png')], desc:"Libérez votre corps de la douleur en un instant ! Découvrez le massage par pistolet, une méthode révolutionnaire qui soulage les tensions musculaires, améliore la circulation et accélère la récupération après l'effort.", features:['Technologie de percussions','Récupération accélérée','Adapté aux sportifs','Durée : 30 min'] }
+  ],
+  'holistique': [
+    { id:'cupping', name:'Cupping thérapie (ventouses)', price:300, img: CDN('products/l4MMID8fUMtGreP1Vr0TiN2d8DWL3NePhy2HEzzv.png'), thumbs:[CDN('products/O8UM0gsencFL8yNPQv05d0VXM13IDfD7b72c0rtG.png'), CDN('products/l4MMID8fUMtGreP1Vr0TiN2d8DWL3NePhy2HEzzv.png')], desc:"Libérez votre corps de la douleur et du stress en un clin d'œil ! La thérapie par ventouses est une méthode ancienne et efficace pour soulager les douleurs musculaires, améliorer la circulation sanguine et favoriser la relaxation profonde.", features:['Méthode ancestrale éprouvée','Soulage les douleurs musculaires','Améliore la circulation','Durée : 45 min'] }
+  ],
+  'perinatalite': [
+    { id:'rebozo', name:'Rebozo — Serrage du bassin', price:500, img: CDN('products/WlB0eyfkLAmy4bC1tQ6eFjUayqHXaIpj65fPbAR6.png'), thumbs:[CDN('products/gbw1MuHEXOGRSgSfFI5meZzMOGsqYa71MNJ7kreb.png'), CDN('products/4Oyj6liqOyx2BKdydPV4RfbIq75CdmhkhZayjLlt.jpg'), CDN('products/yBTaIgBx4qiPNSRngTWifuqorFSeGsULOyBsDbNw.jpg'), CDN('products/WlB0eyfkLAmy4bC1tQ6eFjUayqHXaIpj65fPbAR6.png')], desc:"Rituel post-natal pour refermer le corps — symboliquement et physiquement. Le serrage rebozo offre un moment de recentrage et de reconnexion au corps après l'accouchement, aidant le bassin à retrouver sa position naturelle.", features:['Rituel post-natal traditionnel','Referme le bassin après accouchement','Moment de recentrage','Durée : 60 min'] },
+    { id:'massprenat', name:'Massage Prénatal', price:400, img: CDN('products/dXtrKhmF6xVv7niQXWCQYqsLPZZk1SdUNS6mI0Sl.jpg'), thumbs:[CDN('products/yXqnGuGKCaylbZ0Adb7G2nGs2VHQMJgzZo2sZsPI.png'), CDN('products/Y1S9ZCNuFgCfMUKD9EE8CIZ4d6pvV86sp35J8xWc.jpg'), CDN('products/dXtrKhmF6xVv7niQXWCQYqsLPZZk1SdUNS6mI0Sl.jpg')], desc:"Transformez votre grossesse en une expérience inoubliable ! Le massage prénatal est spécialement conçu pour soulager les douleurs et le stress des futures mamans. Avec des techniques douces et adaptées, profitez d'un moment de détente et de bien-être.", features:['Spécialement adapté à la grossesse','Soulage les douleurs dorsales','Réduit le stress et l\'anxiété','Position sécurisée garantie'] },
+    { id:'reeducperineal', name:'Rééducation Périnéale', price:250, img: CDN('products/8Dycik7RJsrdFBI3IO16fyB3vQERr8BJhgoSZfkz.png'), thumbs:[CDN('products/K3BUcJTx3ukdugk6JHn3qsaDTSrEGCcBJieW3kqc.jpg'), CDN('products/PGmWnrzVWAyMvD5caQ3RaT2HIF1vDlohScm63lKM.webp'), CDN('products/8Dycik7RJsrdFBI3IO16fyB3vQERr8BJhgoSZfkz.png')], desc:"La rééducation périnéale est essentielle après l'accouchement ou en cas de problèmes urinaires. Grâce à des techniques simples et efficaces, renforcez votre plancher pelvien, améliorez votre qualité de vie et retrouvez votre confort quotidien.", features:['Essentielle post-accouchement','Renforce le plancher pelvien','Prévient les fuites urinaires','Séances personnalisées'] }
+  ],
+  'medico-sociale': [
+    { id:'marche-med', name:'Accompagnement à la marche', price:200, img: CDN('products/Gwf8fGS1og8nxCZM5xvrggdZcoGBVthKkr90EdoK.jpg'), thumbs:[CDN('products/fz2RpJm49QMBxH9d5zdnfJhUf3Umk0AbGi0stiyX.png'), CDN('products/yD7UrJlNvsrLjJI91lA8DAdWpz61Pvpde2bxy21E.jpg'), CDN('products/Gwf8fGS1og8nxCZM5xvrggdZcoGBVthKkr90EdoK.jpg')], desc:"Transformez votre marche en une expérience enrichissante. L'accompagnement à la marche vous offre bien plus qu'une simple promenade — conseils personnalisés, exercices adaptés et suivi professionnel pour retrouver mobilité et autonomie.", features:['Conseils personnalisés','Exercices adaptés','Suivi professionnel','Séance individuelle'] },
+    { id:'reeducfonct', name:'Rééducation Fonctionnelle', price:200, img: CDN('products/y6uNCp28RMApjusJZzrbZwu1Ny6x1l8TY5sl5sKt.png'), thumbs:[CDN('products/tUaE1m3pr28r9kAeZNxELyUrd8A4okWFuFgX6s1S.png'), CDN('products/y6uNCp28RMApjusJZzrbZwu1Ny6x1l8TY5sl5sKt.png')], desc:"La rééducation fonctionnelle est un processus personnalisé qui vous permet de retrouver mobilité et qualité de vie. Grâce à des méthodes innovantes et des exercices ciblés, récupérez vos capacités physiques à votre rythme.", features:['Programme personnalisé','Méthodes innovantes','Récupération progressive','Suivi régulier'] }
+  ],
+  'massage': [
+    { id:'dos-pack', name:'Dos (deep tissue + gun massage)', price:400, sale:350, img: CDN('products/uSeozEyO0ZnEnzhZlJ1Tla9jI4GqUA7YqaGYGR84.jpg'), thumbs:[CDN('products/5jnjZ4rqfdhPg9XIJCSpiq1P3989FUX2j6aIkEVT.jpg'), CDN('products/uSeozEyO0ZnEnzhZlJ1Tla9jI4GqUA7YqaGYGR84.jpg')], desc:"Forfait 5 séances de massage du dos en combinant deep tissue et gun massage pour un résultat optimal. Durée de chaque séance : 45 min.", features:['5 séances incluses','Deep tissue + gun massage','Durée : 45 min / séance','Économie sur le forfait'] },
+    { id:'massprenat-pack', name:'Massage prénatal — Pack 5 séances', price:2000, sale:1800, img: CDN('products/dXtrKhmF6xVv7niQXWCQYqsLPZZk1SdUNS6mI0Sl.jpg'), thumbs:[CDN('products/dXtrKhmF6xVv7niQXWCQYqsLPZZk1SdUNS6mI0Sl.jpg')], desc:"Pack complet de 5 séances de massage prénatal pour accompagner votre grossesse tout au long des trimestres. Techniques douces et adaptées pour futures mamans.", features:['5 séances complètes','Spécialement adapté grossesse','Suivi personnalisé','Livraison à domicile'] },
+    { id:'dos-jambes', name:'Dos + jambes entières', price:2000, sale:1750, img: CDN('products/uSeozEyO0ZnEnzhZlJ1Tla9jI4GqUA7YqaGYGR84.jpg'), thumbs:[CDN('products/uSeozEyO0ZnEnzhZlJ1Tla9jI4GqUA7YqaGYGR84.jpg')], desc:"Pack 5 séances couvrant le dos et les jambes entières. Une prise en charge complète du corps inférieur pour un soulagement total.", features:['Dos + jambes entières','5 séances incluses','Durée : 45 min / séance','Profonde détente musculaire'] },
+    { id:'dos-cou', name:'Dos, cou &amp; crâne', price:1250, sale:1000, img: CDN('products/uSeozEyO0ZnEnzhZlJ1Tla9jI4GqUA7YqaGYGR84.jpg'), thumbs:[CDN('products/uSeozEyO0ZnEnzhZlJ1Tla9jI4GqUA7YqaGYGR84.jpg')], desc:"Pack 5 séances de massage du dos, cou et crâne pour soulager les tensions cervicales et les maux de tête liés au stress.", features:['Dos + cou + crâne','Idéal pour tensions cervicales','5 séances incluses','Soulage les migraines'] }
+  ],
+  'drainage': [
+    { id:'drain-corps', name:'Drainage corps entier', price:2100, sale:1900, img: CDN('products/q6Xb27RXH3YKyBpogppxcT6UKghjBHph771z0Ltf.jpg'), thumbs:[CDN('products/oXX3XsYUeD0oYQXdqEnzG2S3c7D2KQ5t9bciCwZp.webp'), CDN('products/q6Xb27RXH3YKyBpogppxcT6UKghjBHph771z0Ltf.jpg')], desc:"Forfait 3 séances de drainage lymphatique du corps entier. Durée de chaque séance : 45 min. Idéal pour une détox complète et une réduction généralisée des œdèmes.", features:['3 séances complètes','Corps entier couvert','Durée : 45 min / séance','Réduction des œdèmes'] },
+    { id:'drain-zone', name:'Drainage une zone', price:1000, sale:900, img: CDN('products/FUSP3G4zeCMx7QvhBC1O4YvlmySZMuaD3R2X38e6.jpg'), thumbs:[CDN('products/h5vQY8YrqItw08Fc37wQO813JVvx6tVnkomeYR5t.webp'), CDN('products/WDetqTgEqHpsuwzEysrvxeRq1ThNgKfyuTfnUdH3.webp'), CDN('products/OEivRWAhoo1jnPHx2Zqgs8Ipy89tLFa3nZOxhDte.jpg'), CDN('products/FUSP3G4zeCMx7QvhBC1O4YvlmySZMuaD3R2X38e6.jpg')], desc:"5 séances de drainage lymphatique ciblé sur une zone : visage, ventre ou un membre. Durée : 45 min. Résultats visibles dès la 2e séance.", features:['5 séances ciblées','Visage, ventre ou membre','Durée : 45 min / séance','Résultats visibles rapidement'] },
+    { id:'drain-jambes', name:'Drainage jambes', price:1750, sale:1550, img: CDN('products/7KTpz2celUTgC7M08xXlZ5pgddM4VVJH7lLKam7v.jpg'), thumbs:[CDN('products/7KTpz2celUTgC7M08xXlZ5pgddM4VVJH7lLKam7v.jpg')], desc:"Forfait 5 séances de drainage lymphatique des deux jambes. Durée : 45 min. Recommandé en cas de jambes lourdes, gonflements ou après une grossesse.", features:['5 séances incluses','Les deux jambes traitées','Durée : 45 min / séance','Idéal pour jambes lourdes'] }
+  ],
+  'marche': [
+    { id:'marche-forfait', name:'Accompagnement à la marche — Forfait 5 séances', price:1500, sale:1400, img: CDN('products/htH8HP3EYJEQamhPudCoYyZcPP39jvquacORlazY.jpg'), thumbs:[CDN('products/qiPQXiUybsEPkY2xzdA7Aw1XFB3nXnpqkCNAzi4c.jpg'), CDN('products/htH8HP3EYJEQamhPudCoYyZcPP39jvquacORlazY.jpg')], desc:"Forfait 5 séances d'accompagnement à la marche pour retrouver mobilité et autonomie. Frais de déplacement possibles selon votre localisation. Prenez soin de vous, un pas à la fois.", features:['5 séances complètes','Conseils personnalisés','Suivi professionnel','Frais déplacement inclus*'] }
+  ]
+};
+
+// ── ROUTER ──
+let currentCollection = null;
+
+function go(page, anchor) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  window.scrollTo(0,0);
+  if(anchor) setTimeout(()=>{
+    const el = document.getElementById(anchor);
+    if(el) el.scrollIntoView({behavior:'smooth'});
+  }, 50);
+}
+
+function goCollection(colId) {
+  currentCollection = colId;
+  const col = COLLECTIONS[colId];
+  const prods = PRODUCTS[colId]||[];
+  document.getElementById('col-breadcrumb').textContent = col.label;
+  document.getElementById('col-title').innerHTML = col.title;
+  document.getElementById('col-subtitle').textContent = col.subtitle;
+  document.getElementById('col-hero-src').src = col.img;
+  const grid = document.getElementById('products-grid');
+  grid.innerHTML = prods.map(p => `
+    <div class="prod-card" onclick="goProduct('${colId}','${p.id}')">
+      <div class="prod-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy"/>
+        ${p.sale ? '<span class="prod-badge sale">Promo</span>' : '<span class="prod-badge">Disponible</span>'}
+      </div>
+      <div class="prod-body">
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-desc">${p.desc.substring(0,100)}…</div>
+        <div class="prod-price">
+          <span class="current">${p.sale||p.price} MAD</span>
+          ${p.sale ? `<span class="old">${p.price} MAD</span>` : ''}
+        </div>
+        <button class="prod-cta">Voir le détail →</button>
+      </div>
+    </div>`).join('');
+  go('collection');
+}
+
+function goProduct(colId, prodId) {
+  const prods = PRODUCTS[colId]||[];
+  const prod = prods.find(p=>p.id===prodId);
+  if(!prod) return;
+  const col = COLLECTIONS[colId];
+  document.getElementById('prod-breadcrumb').textContent = prod.name;
+  document.getElementById('prod-col-link').textContent = col.label;
+  document.getElementById('prod-col-link').setAttribute('onclick', `goCollection('${colId}')`);
+  document.getElementById('prod-cat-tag').textContent = col.tag;
+  document.getElementById('prod-title').textContent = prod.name;
+  document.getElementById('prod-main-img').src = prod.img;
+  document.getElementById('prod-back-btn').setAttribute('onclick', `goCollection('${colId}')`);
+  // price
+  const pb = document.getElementById('prod-price-block');
+  pb.innerHTML = prod.sale
+    ? `<span class="price-main">${prod.sale} MAD</span><span class="price-old">${prod.price} MAD</span><span class="price-badge">Promo</span>`
+    : `<span class="price-main">${prod.price} MAD</span>`;
+  // desc
+  document.getElementById('prod-desc').textContent = prod.desc;
+  // features
+  const feats = document.getElementById('prod-features');
+  feats.innerHTML = prod.features.map(f=>`<div class="product-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>${f}</div>`).join('');
+  // thumbs
+  const thumbs = document.getElementById('prod-thumbs');
+  thumbs.innerHTML = (prod.thumbs||[prod.img]).map((t,i)=>`
+    <div class="thumb ${i===0?'active':''}" onclick="setThumb(this,'${t}')">
+      <img src="${t}" loading="lazy"/>
+    </div>`).join('');
+  go('product');
+}
+
+function setThumb(el, src) {
+  document.getElementById('prod-main-img').src = src;
+  document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── CAROUSEL ──
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+let cur = 0;
+slides.forEach((_,i)=>{
+  const d = document.createElement('button');
+  d.className='cdot'+(i===0?' active':'');
+  d.onclick=()=>goSlide(i);
+  dotsEl.appendChild(d);
+});
+function goSlide(n){
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur=n; slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+}
+setInterval(()=>goSlide((cur+1)%slides.length),4000);
+</script>
+</body>
+</html>
